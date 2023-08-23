@@ -183,21 +183,28 @@ app.get("/todos/:todoId/", async (req, res) => {
 
 app.get("/agenda/", async (req, res) => {
   const { date } = req.query;
+
   let selectDateQuery = "";
-
-  const formatedDate = format(new Date(date), "yyyy-MM-dd");
-
-  const isvalidDate = isValid(new Date(date));
-  const matching = isMatch(formatedDate, "yyyy-MM-dd");
-  if (matching === true) {
-    selectDatequery = `
-    SELECT * FROM todo WHERE due_date ='${formatedDate}';
-    `;
-    const todo = await db.all(selectDatequery);
-    res.send(todo.map((each) => convert(each)));
-  } else {
+  if (date === undefined) {
     res.status(400);
     res.send("Invalid Due Date");
+  } else {
+    const isvalidDate = isValid(new Date(date));
+    const matching = isMatch(date, "yyyy-MM-dd");
+
+    if (isvalidDate) {
+      const formatedDate = format(new Date(date), "yyyy-MM-dd");
+
+      selectDateQuery = `
+        SELECT * FROM todo WHERE due_date ='${formatedDate}';
+        `;
+      const todo = await db.all(selectDateQuery);
+
+      res.send(todo);
+    } else {
+      res.status(400);
+      res.send("Invalid Due Date");
+    }
   }
 });
 app.post("/todos/", async (req, res) => {
@@ -284,8 +291,13 @@ app.put("/todos/:todoId/", async (req, res) => {
       break;
     case req.body.dueDate !== undefined:
       const formatedDate = format(new Date(dueDate), "yyyy-MM-dd");
+      const isvalidDate = isValid(new Date(dueDate));
       const matching = isMatch(formatedDate, "yyyy-MM-dd");
-      if (matching === true) {
+
+      if (isvalidDate === false) {
+        res.status(400);
+        res.send("Invalid Due Date");
+      } else {
         updateQuery = `
                 UPDATE todo
                 SET 
@@ -294,10 +306,8 @@ app.put("/todos/:todoId/", async (req, res) => {
                 `;
         dbresponse = await db.run(updateQuery);
         res.send("Due Date Updated");
-      } else {
-        res.status(400);
-        res.send("Invalid Due Date");
       }
+
       break;
   }
 });
