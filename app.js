@@ -190,7 +190,10 @@ app.get("/agenda/", async (req, res) => {
     res.send("Invalid Due Date");
   } else {
     const isvalidDate = isValid(new Date(date));
+<<<<<<< HEAD
 
+=======
+>>>>>>> eb63100241d6a84febf07b804eecc4adbb4d1de3
     const matching = isMatch(date, "yyyy-MM-dd");
 
     if (isvalidDate) {
@@ -201,7 +204,11 @@ app.get("/agenda/", async (req, res) => {
         `;
       const todo = await db.all(selectDateQuery);
 
+<<<<<<< HEAD
       res.send(todo.map((each) => convert(each)));
+=======
+      res.send(todo);
+>>>>>>> eb63100241d6a84febf07b804eecc4adbb4d1de3
     } else {
       res.status(400);
       res.send("Invalid Due Date");
@@ -293,8 +300,17 @@ app.put("/todos/:todoId/", async (req, res) => {
     case req.body.dueDate !== undefined:
       const formatedDate = format(new Date(dueDate), "yyyy-MM-dd");
       const isvalidDate = isValid(new Date(dueDate));
+<<<<<<< HEAD
       console.log(isvalidDate);
       if (isvalidDate === true) {
+=======
+      const matching = isMatch(formatedDate, "yyyy-MM-dd");
+
+      if (isvalidDate === false) {
+        res.status(400);
+        res.send("Invalid Due Date");
+      } else {
+>>>>>>> eb63100241d6a84febf07b804eecc4adbb4d1de3
         updateQuery = `
                 UPDATE todo
                 SET 
@@ -303,6 +319,7 @@ app.put("/todos/:todoId/", async (req, res) => {
                 `;
         dbresponse = await db.run(updateQuery);
         res.send("Due Date Updated");
+<<<<<<< HEAD
       } else {
         if (isvalidDate === false) {
           res.status(400);
@@ -310,6 +327,8 @@ app.put("/todos/:todoId/", async (req, res) => {
         } else {
           res.send("due Date");
         }
+=======
+>>>>>>> eb63100241d6a84febf07b804eecc4adbb4d1de3
       }
 
       break;
