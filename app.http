@@ -1,8 +1,8 @@
 GET http://localhost:3000/todos/?priority=TO%20D
 ###
-GET http://localhost:3000/todos/8/
+GET http://localhost:3000/todos/1/
 ###
-GET http://localhost:3000/agenda/?date=2021-12-1
+GET http://localhost:3000/agenda/?date=2024-12-12
 ###
 POST http://localhost:3000/todos/
 Content-Type: application/json
