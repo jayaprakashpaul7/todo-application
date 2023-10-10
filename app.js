@@ -178,7 +178,7 @@ app.get("/todos/:todoId/", async (req, res) => {
     SELECT * FROM todo WHERE id = ${todoId}
 ;    `;
   const todo = await db.get(selectTodo);
-  res.send(todo);
+  res.send(convert(todo));
 });
 
 app.get("/agenda/", async (req, res) => {
@@ -190,10 +190,7 @@ app.get("/agenda/", async (req, res) => {
     res.send("Invalid Due Date");
   } else {
     const isvalidDate = isValid(new Date(date));
-<<<<<<< HEAD
 
-=======
->>>>>>> eb63100241d6a84febf07b804eecc4adbb4d1de3
     const matching = isMatch(date, "yyyy-MM-dd");
 
     if (isvalidDate) {
@@ -204,11 +201,7 @@ app.get("/agenda/", async (req, res) => {
         `;
       const todo = await db.all(selectDateQuery);
 
-<<<<<<< HEAD
       res.send(todo.map((each) => convert(each)));
-=======
-      res.send(todo);
->>>>>>> eb63100241d6a84febf07b804eecc4adbb4d1de3
     } else {
       res.status(400);
       res.send("Invalid Due Date");
@@ -217,19 +210,52 @@ app.get("/agenda/", async (req, res) => {
 });
 app.post("/todos/", async (req, res) => {
   const { id, todo, priority, status, category, dueDate } = req.body;
-  const updatequery = `
-    INSERT INTO todo(id, todo, priority, status, category, due_date)
-    VALUES(
-        ${id},
-        '${todo}',
-        '${priority}',
-        '${status}',
-        '${category}',
-        '${dueDate}'
-    );
-    `;
-  const updateResponse = await db.run(updatequery);
-  res.send("Todo Successfully Added");
+  const priorityArray = ["HIGH", "LOW", "MEDIUM"];
+  const statusArray = ["DONE", "TO DO", "IN PROGRESS"];
+  const categoryArray = ["LEARNING", "WORK", "HOME"];
+  const dueDateObj = new Date(dueDate);
+
+  const formateddate = format(new Date(dueDateObj), "yyyy-MM-dd");
+
+  const isdateValid = isValid(new Date(dueDate), "yyyy-MM-dd");
+  if (priorityArray.includes(priority)) {
+    if (statusArray.includes(status)) {
+      if (categoryArray.includes(category)) {
+        if (dueDate !== undefined) {
+          if (isdateValid) {
+            const updatequery = `
+                        INSERT INTO todo(id, todo, priority, status, category, due_date)
+                        VALUES(
+                            ${id},
+                            '${todo}',
+                            '${priority}',
+                            '${status}',
+                            '${category}',
+                            '${formateddate}'
+                        );
+                        `;
+            const updateResponse = await db.run(updatequery);
+            res.send("Todo Successfully Added");
+          } else {
+            res.status(400);
+            res.send("Invalid Due Date");
+          }
+        } else {
+          res.status(400);
+          res.send("Invalid Due Date");
+        }
+      } else {
+        res.status(400);
+        res.send("Invalid Todo Category");
+      }
+    } else {
+      res.status(400);
+      res.send("Invalid Todo Status");
+    }
+  } else {
+    res.status(400);
+    res.send("Invalid Todo Priority");
+  }
 });
 
 app.put("/todos/:todoId/", async (req, res) => {
@@ -298,39 +324,24 @@ app.put("/todos/:todoId/", async (req, res) => {
       }
       break;
     case req.body.dueDate !== undefined:
-      const formatedDate = format(new Date(dueDate), "yyyy-MM-dd");
-      const isvalidDate = isValid(new Date(dueDate));
-<<<<<<< HEAD
-      console.log(isvalidDate);
-      if (isvalidDate === true) {
-=======
-      const matching = isMatch(formatedDate, "yyyy-MM-dd");
+      const dueDate = req.body.dueDate; // Assuming req.body.dueDate is a string
+      const dueDateObj = new Date(dueDate);
 
-      if (isvalidDate === false) {
-        res.status(400);
-        res.send("Invalid Due Date");
-      } else {
->>>>>>> eb63100241d6a84febf07b804eecc4adbb4d1de3
+      if (!isNaN(dueDateObj.getTime())) {
+        const formatedDate = format(dueDateObj, "yyyy-MM-dd");
         updateQuery = `
-                UPDATE todo
-                SET 
-                    due_date ='${dueDate}'
-                WHERE id = ${todoId};
-                `;
+        UPDATE todo
+        SET 
+            due_date ='${formatedDate}'
+        WHERE id = ${todoId};
+      `;
+
         dbresponse = await db.run(updateQuery);
         res.send("Due Date Updated");
-<<<<<<< HEAD
       } else {
-        if (isvalidDate === false) {
-          res.status(400);
-          res.send("Invalid Due Date");
-        } else {
-          res.send("due Date");
-        }
-=======
->>>>>>> eb63100241d6a84febf07b804eecc4adbb4d1de3
+        res.status(400);
+        res.send("Invalid Due Date");
       }
-
       break;
   }
 });
@@ -344,6 +355,7 @@ app.delete("/todos/:todoId/", async (req, res) => {
   const dbresponse = await db.run(deleteQuery);
   res.send("Todo Deleted");
 });
+
 module.exports = app;
 
 //ccbp submit NJSCADOQBS

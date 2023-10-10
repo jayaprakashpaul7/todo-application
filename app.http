@@ -1,6 +1,6 @@
-GET http://localhost:3000/todos/?priority=TO%20D
+GET http://localhost:3000/todos/?priority=LOW
 ###
-GET http://localhost:3000/todos/1/
+GET http://localhost:3000/todos/10/
 ###
 GET http://localhost:3000/agenda/?date=2024-12-12
 ###
@@ -8,17 +8,19 @@ POST http://localhost:3000/todos/
 Content-Type: application/json
 
 {
-  "id": 8,
+  "id": 10,
   "todo": "Learn Solidity",
   "priority": "HIGH",
   "status": "TO DO",
   "category": "HOME",
-  "dueDate": "2024-07-1"
+  "dueDate": "2022-7-1"
 }
 ###
 PUT http://localhost:3000/todos/1/
 Content-Type: application/json
 
 {
-     "dueDate": "2024-07-07"
+     "dueDate": "2024-07"
 }
+###
+DELETE http://localhost:3000/todos/8/
